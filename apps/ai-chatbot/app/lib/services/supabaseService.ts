@@ -2,6 +2,9 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "../utils/supabase/server";
+import PostHogService from "./posthogService";
+
+const posthogService = await PostHogService();
 
 const login = async (formData: FormData) => {
         const loginData = {
@@ -16,18 +19,32 @@ const login = async (formData: FormData) => {
             redirect('/login?error=Invalid credentials');
         }
 
-        redirect('/chat');
+        posthogService.capture({
+            event: "login_button_clicked",
+            distinctId: "anonymous",
+            properties: {
+                $process_person_profile: false,
+            }
+        })
+
+        redirect('/home');
 }
 
 const signup = async (formData: FormData) => {
-    const supabase = await createClient();
+    try {
+        const supabase = await createClient();
 
-    const { data, error } = await supabase.auth.signUp({
-        email: formData.get('email') as string,
-        password: formData.get('password') as string,
-    });
+        const { data, error } = await supabase.auth.signUp({
+            email: formData.get('email') as string,
+            password: formData.get('password') as string,
+        });
 
-    if (error) {
+        if (error) {
+            throw new Error(error.message);
+        }
+
+    } catch (error) {
+        console.log("error", error);
         redirect('/signup?error=sww');
     }
 
@@ -46,7 +63,6 @@ const signInWithGoogle = async () => {
     if (error) {
         redirect('/signup?error=sww');
     }
-    console.log('data', data);
     redirect(data.url);
 }
 

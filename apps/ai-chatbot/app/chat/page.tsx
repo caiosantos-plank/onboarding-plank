@@ -1,19 +1,12 @@
 'use client';
 
-import { FormEvent, ReactNode, useEffect } from "react";
-import useAuth from "../lib/hooks/useAuth";
-import { useSearchParams } from "next/navigation";
+import { FormEvent, ReactNode } from "react";
 import BasePage from "../shared/components/basePage";
-import useChatWrapper from "../lib/hooks/useChatWrapper";
+import useChatDetails from "../lib/hooks/useChatDetails";
 
 
 export default function ChatPage() {
-    const { validateAuthSession } = useAuth();
-    const { currentChatMessage, setCurrentChatMessage, handleChatMessageSubmit } = useChatWrapper({ endpoint: "/api/chat/agents" });
-
-    useEffect(() => {
-        validateAuthSession();
-    }, []);
+    const { currentChatMessage, setCurrentChatMessage, handleChatMessageSubmit } = useChatDetails({ endpoint: "/api/chat/agents", chatId: "" });
 
     function chatInput(props: {
       onSubmit: (e: FormEvent<HTMLFormElement>) => void;
@@ -66,8 +59,7 @@ export default function ChatPage() {
   
     return (
         <BasePage>
-            <div>
-                <h1>Chat</h1>
+            <div> 
               {chatInput({
                 onSubmit: handleChatMessageSubmit,
                 onChange: setCurrentChatMessage,

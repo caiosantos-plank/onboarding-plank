@@ -1,6 +1,4 @@
 import Image from "next/image";
-import { isAuthenticated } from "./lib/services/supabaseService";
-import { redirect } from "next/navigation";
 
 export default function Home() {
 

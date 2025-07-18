@@ -4,6 +4,7 @@ import posthog from "posthog-js";
 import { useAuthStore } from "../stores/useAuthStore";
 import { createClient } from "../utils/supabase/client";
 import { User } from "../utils/types/user";
+import { redirect } from "next/navigation";
 
 const useAuth = () => {
     const { setUser, setIsAuthenticated, user, isAuthenticated } = useAuthStore();
@@ -32,6 +33,8 @@ const useAuth = () => {
         setIsAuthenticated(false);
         setUser(null);
         clearAnalyticsSession();
+
+        redirect("/home");
     }
 
     const validateAuthSession = async () => {

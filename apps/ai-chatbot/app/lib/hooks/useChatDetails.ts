@@ -1,19 +1,19 @@
 import { UIMessage, type Message } from "ai";
 import { useChat } from "@ai-sdk/react";
 import { FormEvent, useState } from "react";
+import useRealtimeChat from "./useRealtimeChat";
 
 interface UseChatWrapperProps {
     endpoint: string;
+    chatId: string;
 }
 
-const useChatWrapper = ({ endpoint }: UseChatWrapperProps) => {
-    const [currentChatMessage, setCurrentChatMessage] = useState<string>();
+const useChatDetails = ({ endpoint, chatId }: UseChatWrapperProps) => {
     const [showIntermediateSteps, setShowIntermediateSteps] = useState(
       true,
     );
     const [intermediateStepsLoading, setIntermediateStepsLoading] =
       useState(false);
-  
     const [sourcesForMessages, setSourcesForMessages] = useState<
       Record<string, any>
     >({});
@@ -38,6 +38,10 @@ const useChatWrapper = ({ endpoint }: UseChatWrapperProps) => {
         console.error(`Error while processing your request`, {
           description: e.message,
         }),
+    });
+    const { broadcastContentChange } = useRealtimeChat({
+      channelName: `chat-${chatId}`,
+      onChatContentChange: (content: string) => chat.setInput(content)
     });
 
     async function sendMessage(e: FormEvent<HTMLFormElement>) {
@@ -145,11 +149,38 @@ const useChatWrapper = ({ endpoint }: UseChatWrapperProps) => {
     //     }
     // }
 
+    const handleCurrentChatMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      chat.handleInputChange(e);
+      broadcastContentChange(e.target.value);
+    }
+
+    const getChatDetails = async () => {
+      const response = await fetch(`/api/chat/${chatId}`);
+      const data = await response.json();
+
+      return data;
+    }
+
+    const shareChat = async (email: string) => {
+      const response = await fetch(`/api/chat/${chatId}/share`, {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        alert("Chat shared successfully");
+      } else {
+        alert("Failed to share chat");
+      }
+    }
     return {
         currentChatMessage: chat.input,
-        setCurrentChatMessage: chat.handleInputChange,
+        loading: chat.isLoading || intermediateStepsLoading,
+        handleCurrentChatMessageChange,
         handleChatMessageSubmit: sendMessage,
+        getChatDetails,
+        shareChat,
     }
 }
 
-export default useChatWrapper;
+export default useChatDetails;

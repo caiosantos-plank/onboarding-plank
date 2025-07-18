@@ -2,8 +2,10 @@
 
 import React from "react";
 import { login, signInWithGoogle } from "@/app/lib/services/supabaseService";
+import Link from "next/link";
 
 export default function LoginPage() {
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-black">
             <div className="w-full max-w-md p-8 space-y-8 bg-white dark:bg-neutral-900 rounded-lg shadow-md">
@@ -40,7 +42,7 @@ export default function LoginPage() {
                     <div>
                         <button
                             formAction={login}
-                            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md bg-foreground text-background font-semibold hover:bg-gray-900 dark:hover:bg-white dark:hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md bg-foreground text-background font-semibold hover:bg-gray-900 dark:hover:bg-white dark:hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                         >
                             Sign in
                         </button>
@@ -48,10 +50,17 @@ export default function LoginPage() {
                     <div>
                         <button
                             onClick={signInWithGoogle}
-                            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md bg-foreground text-background font-semibold hover:bg-gray-900 dark:hover:bg-white dark:hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md bg-foreground text-background font-semibold hover:bg-gray-900 dark:hover:bg-white dark:hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                         >
                             Sign in with Google
                         </button>
+                    </div>
+                    <div>
+                        <Link href="/signup">
+                            <p className="text-sm text-center text-foreground hover:text-blue-500 transition-colors cursor-pointer">
+                                Don't have an account? Sign up
+                            </p>
+                        </Link>
                     </div>
                 </form>
             </div>

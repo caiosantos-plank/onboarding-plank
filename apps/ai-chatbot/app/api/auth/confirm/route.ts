@@ -11,8 +11,6 @@ export async function GET(request: NextRequest) {
 
   const redirectTo = request.nextUrl.clone();
   redirectTo.pathname = next;
-//   redirectTo.searchParams.delete('token_hash');
-//   redirectTo.searchParams.delete('type');
 
   if (token_hash && type) {
     const supabase = await createClient();
@@ -21,9 +19,12 @@ export async function GET(request: NextRequest) {
       token_hash,
     });
 
-    if (!error) {
+    const { error: profileError } = await supabase.from('profiles').update({
+      email: data?.user?.email,
+    }).eq('id', data?.user?.id);
+
+    if (!error && !profileError) {
       redirectTo.searchParams.delete('next');
-    //   redirectTo.searchParams.append()
       return NextResponse.redirect(redirectTo);
     }
   }
